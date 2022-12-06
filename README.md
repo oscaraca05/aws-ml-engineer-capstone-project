@@ -15,8 +15,10 @@ The dataset for developing this project is the [Amazon Bin Image Dataset](https:
 I downloaded the dataset from the S3 bucket that AWS provided to us, I did this process using the function download_and_arrange_data() which was provided within the starter code of this project. This function downloads a sample of the data and then organize it within folders (1,2,3,4,5) indicating the numbers of objects for each image. Then, I divided the data in train and test sets. After this step, I uploaded the data to my S3 bucket using the AWS cli.
 
 ## Model Training
-**TODO**: What kind of model did you choose for this experiment and why? Give an overview of the types of hyperparameters that you specified and why you chose them. Also remember to evaluate the performance of your model.
-I used a ResNet18 pretrained model to get advantage of the previously learned features, I add to the end of the NN a fully connected layer with 5 output neurons to used them as predictors for my 5 classes. I executed an hyperparameter tuning job to find best *Learning rate*, *momentum*, and *batch-size*. As a result, I got a model with 29% accuracy
+I used a ResNet18 pretrained model to get advantage of the previously learned features, I add to the end of the NN a fully connected layer with 5 output neurons to used them as predictors for my 5 classes. I executed an hyperparameter tuning job to find best *Learning rate*, *momentum*, and *batch-size*. As a result, I got a model with 29% accuracy. In the following screenshots we can see the executed hyperparameter tuning job, the best job's hyperparameters, and the accuracy for the test data in the best model.
+![image1](images/hyperparameter_tuning_job.PNG)
+![image1](images/best_training_job.PNG)
+![image1](images/accuracy_best_model.PNG)
 
 ## Machine Learning Pipeline
 The project Pipeline I have implemented can be resumed in the following steps:
