@@ -1,73 +1,38 @@
-# Project Overview: Inventory Monitoring at Distribution Centers
+# Capstone Project Proposal - Inventory Monitoring at Distribution Centers
 
-Distribution centers often use robots to move objects as a part of their operations. Objects are carried in bins which can contain multiple objects. In this project, you will have to build a model that can count the number of objects in each bin. A system like this can be used to track inventory and make sure that delivery consignments have the correct number of items.
+Distribution centers have a lot of repetitive processes in their daily operation, nowadays, a lot of these processes have been automated with AI and robotics. A lot of operations using robotics need to feed the robot’s logic with information about its surroundings, it can be done using computer vision algorithms such as Convolutional Neural Networks (CNN). This project is about a computer vision solution to help robots successfully achieve their daily tasks.
 
-To build this project you will use AWS SageMaker and good machine learning engineering practices to fetch data from a database, preprocess it, and then train a machine learning model. This project will serve as a demonstration of end-to-end machine learning engineering skills that you have learned as a part of this nanodegree.
+Robots in a distribution center need to move bins with items from one place to another, for example, robots move items to set up the inventory in warehouses. Usually, these moving operations are achieved using bins, the robot needs to know how many items each bin has to keep count of the number of items moved. It is difficult to equip a moving robot with the necessary technology to make this counting process accurate and affordable, but, considering that we live in the technology revolution, another solution can be to use an external system that does this counting job, maybe with an image of the bins’ content.
 
-# How it Works
+The most feasible solution to this problem is to equip the robot with a camera that focuses on the bins’ content and sends the image to a system that does the job. This outsourced system has to be equipped with the necessary AI to identify how many items a bin has by using only an image of the bin’s content. This AI will be CNN which needs to be trained with hundreds or even thousands of labeled images. In this project, we want to train and deploy a model for helping the robots within a distribution center to identify how many items are in a bin’s photo.
 
-To complete this project we will be using the <a href="https://registry.opendata.aws/amazon-bin-imagery/" target="_blank">Amazon Bin Image Dataset</a>. The dataset contains 500,000 images of bins containing one or more objects. For each image there is a metadata file containing information about the image like the number of objects, it's dimension and the type of object. For this task, we will try to classify the number of objects in each bin.
+## Dataset
 
-To perform the classification you can use a model type and architecture of your choice. For instance you could use a pre-trained convolutional neural network, or you could create your own neural network architecture. However, you will need to train your model using SageMaker.
+### Overview
+The dataset for developing this project is the [Amazon Bin Image Dataset](https://registry.opendata.aws/amazon-bin-imagery/) which contains 500.000 images of bins containing one or more products, it also has a metadata file for each image which contains information about the number of objects in the bin, their dimensions, and type. We need to work with a subset of this dataset to prevent any excess in SageMaker credit usage.
 
-Once you have trained your model you can attempt some of the Standout Suggestion to get the extra practice and to turn your project into a portfolio piece.
+### Access
+I downloaded the dataset from the S3 bucket that AWS provided to us, I did this process using the function download_and_arrange_data() which was provided within the starter code of this project. This function downloads a sample of the data and then organize it within folders (1,2,3,4,5) indicating the numbers of objects for each image. Then, I divided the data in train and test sets. After this step, I uploaded the data to my S3 bucket using the AWS cli.
 
-# Pipeline
+## Model Training
+**TODO**: What kind of model did you choose for this experiment and why? Give an overview of the types of hyperparameters that you specified and why you chose them. Also remember to evaluate the performance of your model.
+I used a ResNet18 pretrained model to get advantage of the previously learned features, I add to the end of the NN a fully connected layer with 5 output neurons to used them as predictors for my 5 classes. I executed an hyperparameter tuning job to find best *Learning rate*, *momentum*, and *batch-size*. As a result, I got a model with 29% accuracy
 
-To finish this project, you will have to perform the following tasks:
+## Machine Learning Pipeline
+The project Pipeline I have implemented can be resumed in the following steps:
+1. Data preprocessing
+    1. Data sampling and downloading
+    2. Data splitting (train and test)
+    3. Data uploading to S3
+2. Training
+    1. Writing training script (train.py)
+    2. Hyperparameter tunning
+3. Deploying
+    1. Selecting best model and deploy it
+    2. Running multiple predictions to stress the endpoint
+    3. Calibrating endpoint's autoscaling capabilities
 
-1. Upload Training Data: First you will have to upload the training data to an S3 bucket.
-1. Model Training Script: Once you have done that, you will have to write a script to train a model on that dataset.
-1. Train in SageMaker: Finally, you will have to use SageMaker to run that training script and train your model
+## Standout Suggestions
+I did a few tests to stress the endpoint with a lot of predictions, these tests were made using the first cell in the section "Running multiple predictions to stress the endpoint" and using the Jupyter Notebook "more-predictions.ipynb" from another SageMaker instance. In the following images we can see how the capabilities to respond multiple invocantions start to grow when auto-scaling is enabled. A single enpoint was able to process about 770 invocations per minute before the auto-scaling was activated, after this, the endpoint was able to process about 1,500 invocations per minute, and we can see that the stress for individual instances was dramatically reduced, this kind calibration could reduce endpoint's latency and improve the solution throughput. 
 
-Here are the tasks you have to do in more detail:
-
-## Setup AWS
-To build this project, you wlll have to use AWS through your classroom. Below are your main steps:
-- Open AWS through the classroom on the left panel (**Open AWS Gateway**)
-- Open SageMaker Studio and create a folder for your project
-
-## Download the Starter Files
-We have provided a project template and some helpful starter files for this project. You can clone the Github Repo.
-- Clone of download starter files from Github
-- Upload starter files to your workspace
-
-## Preparing Data
-To build this project you will have to use the [Amazon Bin Images Dataset](https://registry.opendata.aws/amazon-bin-imagery/)
-- Download the dataset: Since this is a large dataset, you have been provided with some code to download a small subset of that data. You are encouraged to use this subset to prevent any excess SageMaker credit usage.
-- Preprocess and clean the files (if needed)
-- Upload them to an S3 bucket so that SageMaker can use them for training
-- OPTIONAL: Verify that the data has been uploaded correctly to the right bucket using the AWS S3 CLI or the S3 UI
-
-## Starter Code
-Familiarize yourself with the following starter code
-- `sagemaker.ipynb`
-- `train.py`
-
-## Create a Training Script
-Complete the TODO's in the `train.py` script
-- Read and Preprocess data: Before training your model, you will need to read, load and preprocess your training, testing and validation data
-- Train your Model: You can choose any model type or architecture for this project
-
-## Train using SageMaker
-Complete the TODO's in the `sagemaker.ipynb` notebook
-- Install necessary dependencies
-- Setup the training estimator
-- Submit the job
-
-## Final Steps
-An important part of your project is creating a `README` file that describes the project, explains how to set up and run the code, and describes your results. We've included a template in the starter files (that you downloaded earlier), with `TODOs` for each of the things you should include.
-- Complete the `README` file
-
-# Standout Suggestions
-
-Standout suggestions are some recommendations to help you take your project further and turn it into a nice portfolio piece. If you have been having a good time working on this project and want some additional practice, then we recommend that you try them. However, do not that these suggestions are all optional and you can skip any (or all) of them and submit the project in the next page.
-
-Here are some of suggestions to improve your project:
-
-* **Model Deployment:** Once you have trained your model, can you deploy your model to a SageMaker endpoint and then query it with an image to get a prediction?
-* **Hyperparameter Tuning**: To improve the performance of your model, can you use SageMaker’s Hyperparameter Tuning to search through a hyperparameter space and get the value of the best hyperparameters?
-* **Reduce Costs:** To reduce the cost of your machine learning engineering pipeline, can you do a cost analysis and use spot instances to train your model?
-* **Multi-Instance Training:** Can you train the same model, but this time distribute your training workload across multiple instances?
-
-Once you have completed the standout suggestions, make sure that you explain what you did and how you did it in the `README`. This way the reviewers will look out for it and can give you helpful tips and suggestions!
+![image1](images/invocations_per_minute.PNG)
