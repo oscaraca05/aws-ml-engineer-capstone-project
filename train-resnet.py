@@ -80,6 +80,7 @@ def net():
             param.requires_grad = False
     num_ftrs = model.fc.in_features
     model.fc = nn.Linear(num_ftrs, num_classes)
+    
     return model
 
 def create_data_loaders(data, batch_size):
